@@ -44,7 +44,8 @@ Be friendly, energetic, use streetwear language. Keep answers short and punchy. 
   try {
     const parsed = JSON.parse(data);
     if(parsed.choices && parsed.choices[0]) {
-      res.json({ reply: parsed.choices[0].message.content });
+      console.log(JSON.stringify(parsed));
+res.json({ reply: parsed.choices[0].message.content });
     } else {
       res.status(500).json({ error: JSON.stringify(parsed) });
     }
