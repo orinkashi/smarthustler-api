@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/stylist', (req, res) => {
-  const key = process.env.GROQ_KEY;
+  const key = (process.env.GROQ_KEY || '').replace(/"/g, '').trim();
   console.log('Key starts with:', key ? key.substring(0, 10) : 'MISSING');
   
   const body = JSON.stringify({
