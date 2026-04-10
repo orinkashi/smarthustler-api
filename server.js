@@ -40,6 +40,7 @@ Be friendly, energetic, use streetwear language. Keep answers short and punchy. 
     let data = '';
     response.on('data', (chunk) => { data += chunk; });
     response.on('end', () => {
+  console.log(data);
   try {
     const parsed = JSON.parse(data);
     if(parsed.choices && parsed.choices[0]) {
