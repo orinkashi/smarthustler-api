@@ -40,13 +40,17 @@ Be friendly, energetic, use streetwear language. Keep answers short and punchy. 
     let data = '';
     response.on('data', (chunk) => { data += chunk; });
     response.on('end', () => {
-      try {
-        const parsed = JSON.parse(data);
-        res.json({ reply: parsed.choices[0].message.content });
-      } catch(e) {
-        res.status(500).json({ error: 'Parse error' });
-      }
-    });
+  try {
+    const parsed = JSON.parse(data);
+    if(parsed.choices && parsed.choices[0]) {
+      res.json({ reply: parsed.choices[0].message.content });
+    } else {
+      res.status(500).json({ error: JSON.stringify(parsed) });
+    }
+  } catch(e) {
+    res.status(500).json({ error: data });
+  }
+});
   });
 
   request.on('error', (e) => {
