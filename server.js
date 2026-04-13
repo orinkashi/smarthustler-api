@@ -1,25 +1,28 @@
 const express = require('express');
-const cors = require('cors');
 const https = require('https');
 
 const app = express();
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
 app.use(express.json());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 
 app.post('/stylist', (req, res) => {
   const key = (process.env.GROQ_KEY || '').replace(/"/g, '').trim();
-  console.log('Key starts with:', key ? key.substring(0, 10) : 'MISSING');
-  
+
   const body = JSON.stringify({
     model: 'llama3-8b-8192',
     messages: [
       {
         role: 'system',
-        content: 'You are Smart Hustler AI Stylist. Smart Hustler has 2 hoodies: 1. Dragon Phoenix Hoodie $149 - bold powerful vibe. 2. Gold Wings Hoodie $169 - premium elevated vibe. Be friendly, short answers, always recommend a hoodie.'
+        content: 'You are the Smart Hustler AI Stylist. Smart Hustler has 2 hoodies: 1. Dragon Phoenix Hoodie $149 - bold powerful vibe, dragon front, phoenix back. 2. Gold Wings Hoodie $169 - premium elevated vibe, gold wings front, dragon back. Be friendly, energetic, use streetwear language. Keep answers short and punchy. Always recommend a hoodie.'
       },
       {
         role: 'user',
@@ -44,7 +47,6 @@ app.post('/stylist', (req, res) => {
     let data = '';
     response.on('data', (chunk) => { data += chunk; });
     response.on('end', () => {
-      console.log('Groq response:', data);
       try {
         const parsed = JSON.parse(data);
         if (parsed.choices && parsed.choices[0]) {
@@ -59,7 +61,6 @@ app.post('/stylist', (req, res) => {
   });
 
   request.on('error', (e) => {
-    console.log('Request error:', e.message);
     res.status(500).json({ error: e.message });
   });
 
